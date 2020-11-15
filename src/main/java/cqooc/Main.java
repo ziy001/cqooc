@@ -4,7 +4,9 @@ import bean.Course;
 import bean.Packet;
 import utils.Core;
 
+import javax.swing.*;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -23,6 +25,9 @@ public class Main {
     static {
         SC = new Scanner(System.in);
         SC.useDelimiter("\n");
+        //启动一个窗口防止系统被杀死
+        JFrame jFrame = new JFrame();
+        jFrame.setSize(0, 0);
     }
     public static void main(String[] args) throws Exception {
         System.err.println("\n在程序运行期间不要登录平台避免刷课失败\n");
@@ -81,26 +86,36 @@ public class Main {
         }
         System.out.println();
         //自动循环完成任务
-        ArrayDeque<Map.Entry<String, String>> deque = new ArrayDeque<>();
-        deque.addAll(map.entrySet());
-        for (int i = 0; i < deque.size(); i++) {
-            Map.Entry<String, String> entry = deque.pop();
+        //创建未完成任务的队列
+        ArrayDeque<Map.Entry<String, String>> taskingQueue = new ArrayDeque<>();
+        //创建失败任务队列
+        ArrayList<Integer> failList = new ArrayList<>();
+        taskingQueue.addAll(map.entrySet());
+        while(taskingQueue.size() > 0) {
+            Map.Entry<String, String> entry = taskingQueue.pop();
             String id = entry.getKey();
             String parentId = entry.getValue();
-            System.out.println("正在完成: "+(tasked+i+1));
+            System.out.println("正在完成: "+(++tasked)+"/"+total);
             //构建完整封包
             packet.setSectionId(id).setChapterId(parentId);
             //直接完成
             if (!Core.add(packet)) {
                 System.err.println("当前任务遇到异常");
+                //添加失败的任务到失败队列
+                failList.add(tasked);
             }
             else{
-                System.out.println("已完成: "+(tasked+i+1));
+                System.out.println("已完成: "+(tasked)+"/"+total);
             }
             System.out.println();
             //控制每个任务的间隔
             sleep(time);
         }
+        //输出错误任务提示
+        for (Integer taskNum : failList) {
+            System.out.println("任务: "+taskNum+" 执行失败");
+        }
+        
 
     }
 
@@ -109,16 +124,11 @@ public class Main {
      * @param time
      */
     private static void sleep(int time) {
-        //启动一个线程休眠
-        CompletableFuture.runAsync(() -> {
-            try {
-                TimeUnit.SECONDS.sleep(time);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).thenApply((e) -> flag = true);
-        while(!flag) {}
-        flag = false;
+        try {
+            TimeUnit.SECONDS.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
