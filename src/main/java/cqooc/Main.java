@@ -114,6 +114,9 @@ public class Main {
                 System.out.println("已完成: "+(tasked)+"/"+total);
             }
             System.out.println();
+            if (taskingQueue.size() == 0) {
+                break;
+            }
             //控制每个任务的间隔
             sleep(time);
         }
