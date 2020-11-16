@@ -4,7 +4,7 @@ import bean.Course;
 import bean.Packet;
 import utils.Core;
 
-import javax.swing.*;
+import javax.swing.JFrame;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,10 +20,9 @@ import java.util.concurrent.*;
  */
 public class Main {
     private static volatile boolean flag = false;
-    private static final Scanner SC;
+    private static final Scanner SC = new Scanner(System.in);;
     private static Packet packet;
     static {
-        SC = new Scanner(System.in);
         SC.useDelimiter("\n");
         //启动一个窗口防止系统被杀死
         JFrame jFrame = new JFrame();
@@ -34,8 +33,10 @@ public class Main {
         System.out.print("输入你的xsid值:");
         String xsid = SC.next();
         packet = new Packet(xsid);
+
         //填充用户数据
         Core.fillUserInfo(packet);
+
         //获取全部课程
         Course[] courses = Core.getCourses(packet);
         for (int i = 0; i < courses.length; i++) {
@@ -43,6 +44,7 @@ public class Main {
             System.out.println(courses[i]);
             System.out.println();
         }
+
         //用户输入
         System.out.print("请输入课程序号: ");
         int orderNum = 1;
@@ -62,18 +64,21 @@ public class Main {
         Course course = courses[orderNum - 1];
         packet.setParentId(course.getParentId());
         packet.setCourseId(course.getId());
+
         /*
         至此，Packet包中基本信息填充完毕，接下来只需要修改Packet包中的sectionId和chapterId (两个值是当前需要完成的任务的相关值)
          */
         //获取未完成的任务集合
         Map<String, String> map = Core.taskMap(packet);
         System.out.println();
+
         //计算 进度
         int total = Core.total(packet);
         int tasking = map.size();
         int tasked = total - tasking;
         System.out.println("课程进度: "+tasked+"/"+total);
         System.out.println();
+
         //确定任务间隔
         System.out.print("任务间隔"+"(单位:秒  最低值30): ");
         int time = 30;
@@ -85,6 +90,7 @@ public class Main {
             System.out.print("任务间隔"+"(单位:秒  最低值30): ");
         }
         System.out.println();
+
         //自动循环完成任务
         //创建未完成任务的队列
         ArrayDeque<Map.Entry<String, String>> taskingQueue = new ArrayDeque<>();

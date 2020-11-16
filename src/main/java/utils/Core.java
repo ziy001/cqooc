@@ -53,12 +53,20 @@ public class Core {
         //发送请求
         HttpResponse<String> resp = send(request);
         //解析Json
-        userInfoJson(resp.body(), packet);
+        if (!userInfoJson(resp.body(), packet)) {
+            System.err.println("当前用户无法登录，请重试");
+            System.exit(0);
+        }
     }
-    private static void userInfoJson(String json, Packet packet) throws JsonProcessingException {
+    private static boolean userInfoJson(String json, Packet packet) throws JsonProcessingException {
         JsonNode rootNode = MAPPER.readTree(json);
+        //检查请求信息判断是否成功登录
+        if (Objects.nonNull(rootNode.findPath("msg"))) {
+            return false;
+        }
         packet.setUserName(rootNode.findPath("username").asText())
                 .setOwnerId(rootNode.findPath("id").asText());
+        return true;
     }
 
     /**
