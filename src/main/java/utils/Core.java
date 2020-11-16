@@ -59,11 +59,11 @@ public class Core {
         }
     }
     private static boolean userInfoJson(String json, Packet packet) throws JsonProcessingException {
-        JsonNode rootNode = MAPPER.readTree(json);
-        //检查请求信息判断是否成功登录
-        if (Objects.nonNull(rootNode.findPath("msg"))) {
+        if (json.contains("No")) {
             return false;
         }
+        JsonNode rootNode = MAPPER.readTree(json);
+        //检查请求信息判断是否成功登录
         packet.setUserName(rootNode.findPath("username").asText())
                 .setOwnerId(rootNode.findPath("id").asText());
         return true;
