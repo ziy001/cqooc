@@ -19,8 +19,8 @@ import java.util.concurrent.*;
  * @className Main
  */
 public class Main {
-    private static volatile boolean flag = false;
-    private static final Scanner SC = new Scanner(System.in);;
+    private static final Scanner SC = new Scanner(System.in);
+    private static final int INTERVAL_TIME = 30;
     private static Packet packet;
     static {
         SC.useDelimiter("\n");
@@ -31,7 +31,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.err.println("\n在程序运行期间不要登录平台避免刷课失败\n");
         System.out.print("输入你的xsid值:");
-        String xsid = SC.next();
+        String xsid = SC.nextLine().replaceAll("\\r", "")
+                .replaceAll("\\n", "")
+                .replaceAll(" ", "");
         packet = new Packet(xsid);
 
         //填充用户数据
@@ -51,11 +53,7 @@ public class Main {
         while(SC.hasNextInt()) {
             orderNum = SC.nextInt();
             if(orderNum > 0 && orderNum <= courses.length) {
-                System.out.print(courses[orderNum - 1].getTitle()+"? [Y/N]");
-                String s = SC.next();
-                if (s.equals("Y")) {
-                    break;
-                }
+                break;
             }
             System.out.print("请输入课程序号: ");
         }
@@ -78,19 +76,7 @@ public class Main {
         int tasked = total - tasking;
         System.out.println("课程进度: "+tasked+"/"+total);
         System.out.println();
-
-        //确定任务间隔
-        System.out.print("任务间隔"+"(单位:秒  最低值30): ");
-        int time = 30;
-        while(SC.hasNextInt()) {
-            time = SC.nextInt();
-            if(time >= 30) {
-                break;
-            }
-            System.out.print("任务间隔"+"(单位:秒  最低值30): ");
-        }
-        System.out.println();
-
+        sleep(1);
         //自动循环完成任务
         //创建未完成任务的队列
         ArrayDeque<Map.Entry<String, String>> taskingQueue = new ArrayDeque<>();
@@ -118,7 +104,7 @@ public class Main {
                 break;
             }
             //控制每个任务的间隔
-            sleep(time);
+            sleep(INTERVAL_TIME);
         }
         //输出错误任务提示
         for (Integer taskNum : failList) {

@@ -1,5 +1,9 @@
 package bean;
 
+import constant.Constant;
+
+import java.net.URLEncoder;
+
 /**
  * @author ziy
  * @version 1.0
@@ -22,7 +26,7 @@ public class Packet {
         this.xsid = xsid;
     }
     public String getUserName() {
-        return userName;
+        return URLEncoder.encode(userName, Constant.CHARSET);
     }
 
     public Packet setUserName(String userName) {
@@ -31,7 +35,7 @@ public class Packet {
     }
 
     public String getOwnerId() {
-        return ownerId;
+        return URLEncoder.encode(ownerId, Constant.CHARSET);
     }
 
     public Packet setOwnerId(String ownerId) {
@@ -40,7 +44,7 @@ public class Packet {
     }
 
     public String getXsid() {
-        return xsid;
+        return URLEncoder.encode(xsid, Constant.CHARSET);
     }
 
     public Packet setXsid(String xsid) {
@@ -49,7 +53,7 @@ public class Packet {
     }
 
     public String getCourseId() {
-        return courseId;
+        return URLEncoder.encode(courseId, Constant.CHARSET);
     }
 
     public Packet setCourseId(String courseId) {
@@ -58,7 +62,7 @@ public class Packet {
     }
 
     public String getParentId() {
-        return parentId;
+        return URLEncoder.encode(parentId, Constant.CHARSET);
     }
 
     public Packet setParentId(String parentId) {
@@ -67,7 +71,7 @@ public class Packet {
     }
 
     public String getSectionId() {
-        return sectionId;
+        return URLEncoder.encode(sectionId, Constant.CHARSET);
     }
 
     public Packet setSectionId(String sectionId) {
@@ -76,7 +80,7 @@ public class Packet {
     }
 
     public String getChapterId() {
-        return chapterId;
+        return URLEncoder.encode(chapterId, Constant.CHARSET);
     }
 
     public Packet setChapterId(String chapterId) {

@@ -244,6 +244,7 @@ public class Core {
      * @return
      */
     private static HttpRequest createRequest(String api, HttpRequest.BodyPublisher bodyPublisher, String... attributes) throws UnsupportedEncodingException {
+
         HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(api))
                 .version(HttpClient.Version.HTTP_1_1)
                 .headers("user-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
