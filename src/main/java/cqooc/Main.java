@@ -83,7 +83,7 @@ public class Main {
         //创建失败任务队列
         ArrayList<Integer> failList = new ArrayList<>();
         taskingQueue.addAll(map.entrySet());
-        while(taskingQueue.size() > 0) {
+        while(!taskingQueue.isEmpty()) {
             Map.Entry<String, String> entry = taskingQueue.pop();
             String id = entry.getKey();
             String parentId = entry.getValue();
@@ -100,7 +100,7 @@ public class Main {
                 System.out.println("已完成: "+(tasked)+"/"+total);
             }
             System.out.println();
-            if (taskingQueue.size() == 0) {
+            if (taskingQueue.isEmpty()) {
                 break;
             }
             //控制每个任务的间隔
