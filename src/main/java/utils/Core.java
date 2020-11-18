@@ -281,8 +281,8 @@ public class Core {
             if(resp.statusCode() != 200) {
                 throw new Exception("statusCode: "+ resp.statusCode());
             }
-        }catch (Exception e) {
-            throw e;
+        } catch (Exception e) {
+             throw e;
         }
         return resp;
     }

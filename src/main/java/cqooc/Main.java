@@ -5,6 +5,7 @@ import bean.Packet;
 import utils.Core;
 
 import javax.swing.JFrame;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,8 +29,17 @@ public class Main {
         JFrame jFrame = new JFrame();
         jFrame.setSize(0, 0);
     }
-    public static void main(String[] args) throws Exception {
-        System.err.println("\n在程序运行期间不要登录平台避免刷课失败\n");
+
+    public static void main(String[] args) {
+        try {
+            new Main().start();
+        } catch (Exception e) {
+            System.err.println("网络错误!!!");
+            System.exit(-1);
+        }
+    }
+    private void start() throws Exception {
+        System.err.println("\n在程序运行期间不要登录平台以免导致任务异常\n");
         System.out.print("输入你的xsid值:");
         String xsid = SC.nextLine().replaceAll("\\r", "")
                 .replaceAll("\\n", "")
@@ -70,6 +80,8 @@ public class Main {
         Map<String, String> map = Core.taskMap(packet);
         System.out.println();
 
+    }
+    private void addTask(Map<String, String> map) throws UnsupportedEncodingException {
         //计算 进度
         int total = Core.total(packet);
         int tasking = map.size();
@@ -103,6 +115,7 @@ public class Main {
             if (taskingQueue.isEmpty()) {
                 break;
             }
+            System.out.println("-------等待30秒-------");
             //控制每个任务的间隔
             sleep(INTERVAL_TIME);
         }
@@ -110,15 +123,12 @@ public class Main {
         for (Integer taskNum : failList) {
             System.out.println("任务: "+taskNum+" 执行失败");
         }
-        
-
     }
-
     /**
      * 暂停线程
      * @param time
      */
-    private static void sleep(int time) {
+    private void sleep(int time) {
         try {
             TimeUnit.SECONDS.sleep(time);
         } catch (InterruptedException e) {

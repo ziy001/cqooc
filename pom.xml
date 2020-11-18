@@ -6,7 +6,7 @@
 
     <groupId>ziy.util</groupId>
     <artifactId>cqooc-ziy</artifactId>
-    <version>1.03</version>
+    <version>1.05</version>
     <packaging>jar</packaging>
 
     <properties>
