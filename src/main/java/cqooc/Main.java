@@ -34,7 +34,8 @@ public class Main {
         try {
             new Main().start();
         } catch (Exception e) {
-            System.err.println("网络错误!!!");
+            System.err.println("网络请求错误,请检查xsid值和网络是否连接!!!");
+            System.err.println(e.getMessage());
             System.exit(-1);
         }
     }
@@ -77,23 +78,32 @@ public class Main {
         至此，Packet包中基本信息填充完毕，接下来只需要修改Packet包中的sectionId和chapterId (两个值是当前需要完成的任务的相关值)
          */
         //获取未完成的任务集合
-        Map<String, String> map = Core.taskMap(packet);
+        Map<String, String> map = Core.getTaskMap(packet);
         System.out.println();
-
+        addTask(map);
     }
     private void addTask(Map<String, String> map) throws UnsupportedEncodingException {
         //计算 进度
-        int total = Core.total(packet);
+        int total = Core.getTotal(packet);
         int tasking = map.size();
         int tasked = total - tasking;
-        System.out.println("课程进度: "+tasked+"/"+total);
+        System.out.println("进度: "+tasked+"/"+total+"   "+"预计需要: "+(map.size()*INTERVAL_TIME/60)+"分钟完成");
         System.out.println();
         sleep(1);
-        //自动循环完成任务
+        /*
+        开始完成任务
+         */
         //创建未完成任务的队列
         ArrayDeque<Map.Entry<String, String>> taskingQueue = new ArrayDeque<>();
         //创建失败任务队列
-        ArrayList<Integer> failList = new ArrayList<>();
+        ArrayList<Integer> failList = new ArrayList<>(50);
+        //添加关闭线程----打印失败任务线程
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println();
+            for (Integer taskNum : failList) {
+                System.out.println("任务: "+taskNum+" 执行失败");
+            }
+        }));
         taskingQueue.addAll(map.entrySet());
         while(!taskingQueue.isEmpty()) {
             Map.Entry<String, String> entry = taskingQueue.pop();
@@ -103,7 +113,7 @@ public class Main {
             //构建完整封包
             packet.setSectionId(id).setChapterId(parentId);
             //直接完成
-            if (!Core.add(packet)) {
+            if (!Core.addTask(packet)) {
                 System.err.println("当前任务遇到异常");
                 //添加失败的任务到失败队列
                 failList.add(tasked);
@@ -115,13 +125,10 @@ public class Main {
             if (taskingQueue.isEmpty()) {
                 break;
             }
-            System.out.println("-------等待30秒-------");
+            System.out.println("-------等待-------");
+            System.out.println();
             //控制每个任务的间隔
             sleep(INTERVAL_TIME);
-        }
-        //输出错误任务提示
-        for (Integer taskNum : failList) {
-            System.out.println("任务: "+taskNum+" 执行失败");
         }
     }
     /**

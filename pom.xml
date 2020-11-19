@@ -6,11 +6,12 @@
 
     <groupId>ziy.util</groupId>
     <artifactId>cqooc-ziy</artifactId>
-    <version>1.05</version>
+    <version>${version}</version>
     <packaging>jar</packaging>
 
     <properties>
         <jackson.version>2.11.3</jackson.version>
+        <version>1.10</version>
     </properties>
     <dependencyManagement>
         <dependencies>
