@@ -65,15 +65,26 @@ public class Core {
         String ownerId = packet.getOwnerId();
         String xsid = packet.getXsid();
         //获取指定API
-        String api = MessageFormat.format(PropsUtil.getProperty("allCourses"), ownerId);
-        //请求体
-        request = createRequest(api, null,
-                "Referer", "http://www.cqooc.net/my/learn",
-                "Cookie", "xsid=" + xsid);
-
-        //发送请求
-        response = send(request);
-        return coursesJson(response.body(), packet);
+        String api = MessageFormat.format(PropsUtil.getProperty("allCourses"), ownerId, "{0}");
+        ArrayList<Course> list = new ArrayList<>(50);
+        int start = 1;
+        while (true) {
+            api = MessageFormat.format(api, start);
+            //请求体
+            request = createRequest(api, null,
+                    "Referer", "http://www.cqooc.net/my/learn",
+                    "Cookie", "xsid=" + xsid);
+            //发送请求
+            response = send(request);
+            boolean b = coursesJson(response.body(), list);
+            if (b) {
+                start += 200;
+            } else {
+                break;
+            }
+        }
+        Course[] courses = list.toArray(Course[]::new);
+        return courses;
     }
     /**
      * 获取全部任务总数
@@ -124,6 +135,7 @@ public class Core {
                 break;
             }
         }
+        Thread.sleep(500);
         //构建全部任务的Map集合
         Map<String, String> map = new HashMap<>(270);
         String allTaskApi = MessageFormat.format(PropsUtil.getProperty("allTask"), courseId);
@@ -199,20 +211,31 @@ public class Core {
                 .setOwnerId(rootNode.findPath("id").asText());
         return true;
     }
-    private static Course[] coursesJson(String json, Packet packet) throws JsonProcessingException {
+
+    /**
+     * 将传入list加载进课程信息
+     * @param json
+     * @param list
+     * @return 返回是否继续查询
+     * @throws JsonProcessingException
+     */
+    private static boolean coursesJson(String json, ArrayList<Course> list) throws JsonProcessingException {
         JsonNode rootNode = MAPPER.readTree(json);
-        //创建数组
-        Course[] allCourses = new Course[rootNode.findPath("meta").findPath("total").asInt()];
-        JsonNode dataNode = rootNode.findPath("data");
+        JsonNode data = rootNode.findPath("data");
+        JsonNode meta = rootNode.findPath("meta");
         //循环遍历JSON数组取出每一项数据并创建对象
-        for (int i = 0; i < dataNode.size(); i++) {
-            JsonNode node = dataNode.path(i);
+        for (int i = 0; i < data.size(); i++) {
+            JsonNode node = data.path(i);
             JsonNode cNode = node.findPath("course");
-            allCourses[i] = new Course(node.findPath("courseId").asText(), node.findPath("id").asText(),
-                    cNode.findPath("title").asText(), cNode.findPath("courseManager").asText(), cNode.findPath("school").asText());
+            list.add(new Course(node.findPath("courseId").asText(),
+                    node.findPath("id").asText(),
+                    cNode.findPath("title").asText(),
+                    cNode.findPath("courseManager").asText(),
+                    cNode.findPath("school").asText())
+            );
         }
-        //返回数组
-        return allCourses;
+        int i = meta.findPath("total").asInt() - meta.findPath("start").asInt() - 1 - meta.findPath("size").asInt();
+        return i > 0;
     }
     private static boolean taskedJson(String edJson, ArrayList<String> list) throws JsonProcessingException {
         //先解析已完成任务
