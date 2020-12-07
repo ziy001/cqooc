@@ -31,7 +31,7 @@ public class Main {
                 .replaceAll(" ", "");
         Main.packet = new Packet(xsid);
         try {
-            System.out.println("1: 单个课程"+"\n"+"2: 全部课程: ");
+//            System.out.println("1: 单个课程"+"\n"+"2: 全部课程: ");
 //            while (SC.hasNextInt()) {
 //                int i = Integer.parseInt(SC.next().replaceAll("\\r", "")
 //                        .replaceAll("\\n", "")
