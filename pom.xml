@@ -11,7 +11,7 @@
 
     <properties>
         <jackson.version>2.11.3</jackson.version>
-        <version>1.10</version>
+        <version>1.2</version>
     </properties>
     <dependencyManagement>
         <dependencies>
